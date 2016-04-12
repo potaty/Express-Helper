@@ -71,7 +71,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 //DummyContent.ITEMS.remove(0);
                 save = view;
                 Intent intent = getIntent();
-                int pos = intent.getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0);
+                int pos = Integer.parseInt(intent.getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
                 makeGray(pos);
                 Log.v("debug", view.toString());
                 timer = new Timer();

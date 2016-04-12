@@ -1,5 +1,7 @@
 package com.potaty.helper.dummy;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -44,6 +46,7 @@ public class DummyContent {
             for (int i = 0; i < ja.length(); ++i) {
                 JSONObject jo = (JSONObject) ja.get(i);
                 DummyItem di = new DummyItem(""+jo.getInt("id"), jo.getString("title"),jo.getString("address"), jo.getInt("status"));
+                Log.v("verbose", "" + di.status);
                 DummyContent.addItem(di);
                 DummyContent.ITEM_MAP.put("" + jo.getInt("id"), di);
             }
