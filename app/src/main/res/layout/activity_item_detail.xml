@@ -53,6 +53,7 @@
         android:id="@+id/twod_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="15dp"
+        android:layout_gravity="bottom"
         android:src="@mipmap/two_d"/>
 </android.support.design.widget.CoordinatorLayout>

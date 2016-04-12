@@ -13,6 +13,9 @@ import android.view.View;
 
 import com.potaty.helper.dummy.DummyContent;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Timer;
 import java.util.TimerTask;
 /**
@@ -25,16 +28,30 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     Timer timer;
     View save;
+    int poss;
+
     class RemindTask extends TimerTask{
         public void run() {
             timer.cancel(); //Terminate the timer thread
-
             Intent intent = new Intent(ItemDetailActivity.this, ItemListActivity.class);
             intent.putExtra("ex", 1);
             startActivity(intent);
-            //Snackbar.make(findViewById(R.id.item_list), "NFC 扫描中,请耐心等待柜门开启", Snackbar.LENGTH_LONG)
-                    //.setAction("Action", null).show();
         }
+    }
+
+
+    void makeGray(int pos) {
+        poss = pos;
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    String res = HttpRequest.sendPost("http://express.magica.tech/api/user/check_item", "item_id=" + poss);
+                } catch (Exception e) {
+                    Log.v("verbose", "jahahahahahah" + e.toString());
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -46,12 +63,16 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "NFC 扫描中,请耐心等待柜门开启", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                DummyContent.ITEMS.remove(0);
+                //DummyContent.ITEMS.remove(0);
                 save = view;
+                Intent intent = getIntent();
+                int pos = intent.getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0);
+                makeGray(pos);
                 Log.v("debug", view.toString());
                 timer = new Timer();
                 timer.schedule(new RemindTask(), 3 * 1000);

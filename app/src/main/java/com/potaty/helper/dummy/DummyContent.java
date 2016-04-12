@@ -38,10 +38,12 @@ public class DummyContent {
         ITEM_MAP.put(item.id, item);
     }
     public static void setList(JSONArray ja) {
+        ITEM_MAP.clear();
+        ITEMS.clear();
         try {
             for (int i = 0; i < ja.length(); ++i) {
                 JSONObject jo = (JSONObject) ja.get(i);
-                DummyItem di = new DummyItem(""+jo.getInt("id"), jo.getString("title"),jo.getString("address"));
+                DummyItem di = new DummyItem(""+jo.getInt("id"), jo.getString("title"),jo.getString("address"), jo.getInt("status"));
                 DummyContent.addItem(di);
                 DummyContent.ITEM_MAP.put("" + jo.getInt("id"), di);
             }
@@ -71,12 +73,13 @@ public class DummyContent {
         public String id;
         public String content;
         public String details;
+        public int status;
 
-
-        public DummyItem(String id, String content, String details) {
+        public DummyItem(String id, String content, String details, int status) {
             this.id = id;
             this.content = content;
             this.details = details;
+            this.status = status;
         }
 
         @Override
