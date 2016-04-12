@@ -18,6 +18,9 @@ import android.widget.TextView;
 
 import com.potaty.helper.dummy.DummyContent;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -35,7 +38,7 @@ public class ItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    public static View save;
+    //public static View save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +52,6 @@ public class ItemListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                save = view;
-                Log.v("debug", "view");
                 Snackbar.make(view, "请选择你要取的快件", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -69,15 +70,19 @@ public class ItemListActivity extends AppCompatActivity {
                     .setAction("Action", null).show();
         }
         if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        String res = HttpRequest.sendGet("http://express.magica.tech/api/user/item_list", "");
+        try {
+            JSONObject jo = new JSONObject(res);
+            JSONArray items = (JSONArray)jo.get("items");
+            DummyContent.setList(items);
+        } catch (Exception e) {
+
+        }
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
     }
 
@@ -118,7 +123,6 @@ public class ItemListActivity extends AppCompatActivity {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
                         context.startActivity(intent);
                     }
                 }

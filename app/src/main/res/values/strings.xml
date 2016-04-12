@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">快递助手</string>
+    <string name="app_name">helper</string>
     <string name="title_item_detail">快递详情</string>
     <string name="login_lable_username">账号</string>
     <string name="login_lable_password">密码</string>
     <string name="login_lable_hint">手机号或用户名</string>
     <string name="login_button_text">登录</string>
     <string name="regist_button_text">注册</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">阿森大赛阿萨德阿萨德登录登录登录</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">手机号或用户名</string>
@@ -19,4 +19,5 @@
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"请用正常的用户名字."</string>
     <string name="debug">before</string>
+    <string name="title_activity_new_login">收货助手</string>
 </resources>

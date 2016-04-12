@@ -11,17 +11,19 @@ import android.app.LoaderManager.LoaderCallbacks;
 
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.content.Intent;
-import android.util.Log;
+
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.util.Log;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
@@ -32,14 +34,17 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.lang.String;
+import com.potaty.helper.HttpRequest;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class NewLoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -63,11 +68,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
+    public View saveView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_new_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -80,21 +85,46 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     attemptLogin();
                     return true;
                 }
-                return true;
+                return false;
             }
         });
-
-        Log.v("debug", String.valueOf(R.string.debug));
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.v("verbose", "Button is pressed");
-                Intent intent = new Intent(LoginActivity.this, ItemListActivity.class);
-                startActivity(intent);
+                saveView = view;
+                new Thread(){
+                    @Override
+                    public void run()
+                    {
+                        //把网络访问的代码放在这里
+                        Log.v("verbose", "run is pressed");
+                        //String username = ((AutoCompleteTextView) findViewById(R.id.email)).get;
+                        String username = mEmailView.getText().toString();
+                        String password = mPasswordView.getText().toString();
+                        String s = getUserJson(username, password);
+
+                        try {
+                            JSONObject resultObj = new JSONObject(s);
+                            String code = resultObj.getString("code");
+                            if (code.equals("0")) {
+                                Intent intent = new Intent(NewLoginActivity.this, ItemListActivity.class);
+                                startActivity(intent);
+                            }
+                            else {
+                                Snackbar.make(saveView, "登录失败，请检查您的用户名和密码", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
+                        }catch(Exception e){
+
+                        }
+
+                    }
+                }.start();
+                //startActivity(intent);
             }
         });
-
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
@@ -105,6 +135,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    private String getUserJson(String username, String password) {
+        return  HttpRequest.sendPost("http://express.magica.tech/api/user/sign_in", "username="+username+"&password=" + password);
     }
 
     private boolean mayRequestContacts() {
@@ -197,13 +231,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        for (int i = 0; i < email.length(); ++ i)
+            if (email.charAt(i) > '9' || email.charAt(i) < '0')
+                return false;
+        return true;
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+
 
     /**
      * Shows the progress UI and hides the login form.
@@ -278,7 +316,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(NewLoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
