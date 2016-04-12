@@ -43,7 +43,7 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
-
+        Log.v("verbose", "why not have list");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
@@ -59,7 +59,7 @@ public class ItemListActivity extends AppCompatActivity {
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-
+        Log.v("verbose", "rec" + recyclerView.toString());
         Intent intent=getIntent();
         int str = intent.getIntExtra("ex", 0);
         if (str == 1) {
@@ -75,14 +75,23 @@ public class ItemListActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        String res = HttpRequest.sendGet("http://express.magica.tech/api/user/item_list", "");
-        try {
-            JSONObject jo = new JSONObject(res);
-            JSONArray items = (JSONArray)jo.get("items");
-            DummyContent.setList(items);
-        } catch (Exception e) {
 
-        }
+        new Thread() {
+            @Override
+            public void run() {
+                //把网络访问的代码放在这里
+                try {
+                    String res = HttpRequest.sendGet("http://express.magica.tech/api/user/item_list", "");
+                    JSONObject jo = new JSONObject(res);
+                    Log.v("verbose", res);
+                    JSONArray items = (JSONArray) jo.get("items");
+                    Log.v("verbose", "hahahahaha" + items.toString());
+                    DummyContent.setList(items);
+                } catch (Exception e) {
+                    Log.v("verbose", "jahahahahahah" + e.toString());
+                }
+            }
+        }.start();
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
     }
 

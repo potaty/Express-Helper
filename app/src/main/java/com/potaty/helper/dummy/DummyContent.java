@@ -19,12 +19,12 @@ public class DummyContent {
     /**
      * An array of sample (dummy) items.
      */
-    public List<DummyItem> ITEMS = new ArrayList<DummyItem>();
+    public static List<DummyItem> ITEMS = new ArrayList<DummyItem>();
 
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    public static Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
 
     private int COUNT = 4;
 
@@ -40,8 +40,10 @@ public class DummyContent {
     public static void setList(JSONArray ja) {
         try {
             for (int i = 0; i < ja.length(); ++i) {
-                JSONObject x = (JSONObject) ja.get(i);
-
+                JSONObject jo = (JSONObject) ja.get(i);
+                DummyItem di = new DummyItem(""+jo.getInt("id"), jo.getString("title"),jo.getString("address"));
+                DummyContent.addItem(di);
+                DummyContent.ITEM_MAP.put("" + jo.getInt("id"), di);
             }
         }catch(Exception e) {
 

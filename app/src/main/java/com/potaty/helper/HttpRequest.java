@@ -41,6 +41,7 @@ public class HttpRequest {
             // 设置通用的请求属性
             connection.setRequestProperty("accept", "*/*");
             connection.setRequestProperty("connection", "Keep-Alive");
+            Log.v("verbose", "cookie" + cookie);
             if (!cookie.equals(""))
                 connection.setRequestProperty("cookie", cookie);
             connection.setRequestProperty("user-agent",
@@ -120,7 +121,9 @@ public class HttpRequest {
                     continue;
                 Log.v("verbose", key + "--->" + map.get(key));
                 if (key.equals("set-cookie")) {
-                    cookie = map.get(key).toString().split(";")[0];
+
+                    cookie = map.get(key).toString().split(";")[0].substring(1);
+                    Log.v("verbose", "this is cookie" + cookie);
                 }
             }
             // 定义BufferedReader输入流来读取URL的响应
